@@ -25,3 +25,16 @@ export function formatDateTime(value: string) {
     minute: "2-digit",
   }).format(date);
 }
+
+export function formatPrice(value: number) {
+  if (!Number.isFinite(value)) {
+    return "-";
+  }
+
+  const digits = value >= 100 ? 3 : 4;
+
+  return new Intl.NumberFormat("ja-JP", {
+    minimumFractionDigits: digits,
+    maximumFractionDigits: digits,
+  }).format(value);
+}

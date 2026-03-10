@@ -1,10 +1,12 @@
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
-import { fetchTrades } from "./api";
+import { getTrades } from "./api";
+import { defaultTradeFilters, TradeFilters } from "./types";
 
-export function useTrades() {
+export function useTradesQuery(filters: TradeFilters = defaultTradeFilters) {
   return useQuery({
-    queryKey: ["trades"],
-    queryFn: fetchTrades,
+    queryKey: ["trades", filters],
+    queryFn: () => getTrades(filters),
+    placeholderData: keepPreviousData,
   });
 }
