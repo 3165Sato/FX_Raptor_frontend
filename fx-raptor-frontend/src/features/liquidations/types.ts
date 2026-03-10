@@ -1,11 +1,30 @@
 import { ApiListResponse } from "@/types/common";
 
-export type Liquidation = {
-  id: string;
-  accountId: string;
-  pair: string;
+export type LiquidationLog = {
+  liquidationLogId: string | number;
+  accountId: string | number;
+  orderId: string | number;
+  tradeId?: string | number | null;
+  currencyPair: string;
+  side: "BUY" | "SELL";
   quantity: number;
-  executedAt: string;
+  liquidationReason: string;
+  marginRatioAtLiquidation: number;
+  createdAt: string;
 };
 
-export type LiquidationsResponse = ApiListResponse<Liquidation>;
+export type LiquidationsResponse = ApiListResponse<LiquidationLog>;
+
+export type LiquidationFilters = {
+  accountId: string;
+  currencyPair: string;
+  side: string;
+  liquidationReason: string;
+};
+
+export const defaultLiquidationFilters: LiquidationFilters = {
+  accountId: "",
+  currencyPair: "",
+  side: "",
+  liquidationReason: "",
+};

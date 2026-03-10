@@ -1,10 +1,12 @@
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
-import { fetchLiquidations } from "./api";
+import { getLiquidations } from "./api";
+import { defaultLiquidationFilters, LiquidationFilters } from "./types";
 
-export function useLiquidations() {
+export function useLiquidationsQuery(filters: LiquidationFilters = defaultLiquidationFilters) {
   return useQuery({
-    queryKey: ["liquidations"],
-    queryFn: fetchLiquidations,
+    queryKey: ["liquidations", filters],
+    queryFn: () => getLiquidations(filters),
+    placeholderData: keepPreviousData,
   });
 }

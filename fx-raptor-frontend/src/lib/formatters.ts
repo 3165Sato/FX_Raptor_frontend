@@ -38,3 +38,14 @@ export function formatPrice(value: number) {
     maximumFractionDigits: digits,
   }).format(value);
 }
+
+export function formatPercent(value: number) {
+  if (!Number.isFinite(value)) {
+    return "-";
+  }
+
+  return `${new Intl.NumberFormat("ja-JP", {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
+  }).format(value)}%`;
+}
