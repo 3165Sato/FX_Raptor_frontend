@@ -1,5 +1,6 @@
-type ApiClientOptions = RequestInit & {
+type ApiClientOptions = Omit<RequestInit, "body"> & {
   query?: Record<string, string | number | boolean | undefined>;
+  body?: unknown;
 };
 
 const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;

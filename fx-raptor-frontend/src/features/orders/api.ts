@@ -1,6 +1,14 @@
 import { apiClient } from "@/lib/apiClient";
 
-import { defaultOrderFilters, Order, OrderFilters, OrdersResponse } from "./types";
+import {
+  defaultOrderFilters,
+  MarketOrderRequest,
+  MarketOrderResponse,
+  Order,
+  OrderFilters,
+  OrdersResponse,
+  Quote,
+} from "./types";
 
 const mockOrders: Order[] = [
   {
@@ -60,6 +68,27 @@ const mockOrders: Order[] = [
   },
 ];
 
+const mockQuotes: Record<string, Quote> = {
+  "USD/JPY": {
+    currencyPair: "USD/JPY",
+    bid: 149.286,
+    ask: 149.291,
+    timestamp: "2026-03-10T11:48:00+09:00",
+  },
+  "EUR/JPY": {
+    currencyPair: "EUR/JPY",
+    bid: 161.438,
+    ask: 161.445,
+    timestamp: "2026-03-10T11:48:00+09:00",
+  },
+  "GBP/JPY": {
+    currencyPair: "GBP/JPY",
+    bid: 192.104,
+    ask: 192.112,
+    timestamp: "2026-03-10T11:48:00+09:00",
+  },
+};
+
 function applyFilters(orders: Order[], filters: OrderFilters) {
   return orders.filter((order) => {
     const accountMatches =
@@ -90,6 +119,41 @@ export async function getOrders(filters: OrderFilters = defaultOrderFilters) {
     return {
       items,
       total: items.length,
+    };
+  }
+}
+
+export async function getQuote(currencyPair: string) {
+  try {
+    return await apiClient<Quote>("/api/quotes", {
+      query: {
+        currencyPair,
+      },
+    });
+  } catch {
+    return mockQuotes[currencyPair] ?? {
+      currencyPair,
+      bid: 100,
+      ask: 100.01,
+      timestamp: new Date().toISOString(),
+    };
+  }
+}
+
+export async function submitMarketOrder(payload: MarketOrderRequest) {
+  try {
+    return await apiClient<MarketOrderResponse>("/api/orders/market", {
+      method: "POST",
+      body: payload,
+    });
+  } catch {
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    return {
+      orderId: `MOCK-${Date.now()}`,
+      status: "ACCEPTED",
+      message: `${payload.currencyPair} ${payload.side} ${payload.quantity.toLocaleString("ja-JP")} accepted`,
+      acceptedAt: new Date().toISOString(),
     };
   }
 }

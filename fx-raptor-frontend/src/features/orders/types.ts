@@ -14,6 +14,27 @@ export type Order = {
 
 export type OrdersResponse = ApiListResponse<Order>;
 
+export type MarketOrderRequest = {
+  accountId: string | number;
+  currencyPair: string;
+  side: "BUY" | "SELL";
+  quantity: number;
+};
+
+export type MarketOrderResponse = {
+  orderId: string | number;
+  status: string;
+  message: string;
+  acceptedAt: string;
+};
+
+export type Quote = {
+  currencyPair: string;
+  bid: number;
+  ask: number;
+  timestamp: string;
+};
+
 export type OrderFilters = {
   accountId: string;
   currencyPair: string;
