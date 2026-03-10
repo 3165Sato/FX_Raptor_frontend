@@ -1,10 +1,12 @@
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
-import { fetchCovers } from "./api";
+import { getCovers } from "./api";
+import { CoverFilters, defaultCoverFilters } from "./types";
 
-export function useCovers() {
+export function useCoversQuery(filters: CoverFilters = defaultCoverFilters) {
   return useQuery({
-    queryKey: ["covers"],
-    queryFn: fetchCovers,
+    queryKey: ["covers", filters],
+    queryFn: () => getCovers(filters),
+    placeholderData: keepPreviousData,
   });
 }
