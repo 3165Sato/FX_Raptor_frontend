@@ -1,10 +1,12 @@
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
-import { fetchPositions } from "./api";
+import { getPositions } from "./api";
+import { defaultPositionFilters, PositionFilters } from "./types";
 
-export function usePositions() {
+export function usePositionsQuery(filters: PositionFilters = defaultPositionFilters) {
   return useQuery({
-    queryKey: ["positions"],
-    queryFn: fetchPositions,
+    queryKey: ["positions", filters],
+    queryFn: () => getPositions(filters),
+    placeholderData: keepPreviousData,
   });
 }
