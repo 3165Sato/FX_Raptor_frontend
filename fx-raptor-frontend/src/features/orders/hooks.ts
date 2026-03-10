@@ -1,10 +1,12 @@
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
-import { fetchOrders } from "./api";
+import { getOrders } from "./api";
+import { defaultOrderFilters, OrderFilters } from "./types";
 
-export function useOrders() {
+export function useOrdersQuery(filters: OrderFilters = defaultOrderFilters) {
   return useQuery({
-    queryKey: ["orders"],
-    queryFn: fetchOrders,
+    queryKey: ["orders", filters],
+    queryFn: () => getOrders(filters),
+    placeholderData: keepPreviousData,
   });
 }
