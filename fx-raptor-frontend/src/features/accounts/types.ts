@@ -9,3 +9,15 @@ export type Account = {
 };
 
 export type AccountsResponse = ApiListResponse<Account>;
+
+export type AccountView = {
+  accountId: string | number;
+  customerNo?: string;
+  currencyCode: string;
+  balance: number;
+  unrealizedPnL: number;
+  equity: number;
+  requiredMargin: number;
+  marginRatio: number;
+  updatedAt?: string;
+};
