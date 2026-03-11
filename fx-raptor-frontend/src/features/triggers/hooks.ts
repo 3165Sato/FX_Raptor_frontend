@@ -1,10 +1,18 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
-import { fetchTriggers } from "./api";
+import { createTriggerOrder, getTriggerQuote } from "./api";
 
-export function useTriggers() {
+export function useTriggerQuoteQuery(currencyPair: string) {
   return useQuery({
-    queryKey: ["triggers"],
-    queryFn: fetchTriggers,
+    queryKey: ["trigger-quote", currencyPair],
+    queryFn: () => getTriggerQuote(currencyPair),
+    enabled: Boolean(currencyPair),
+    refetchInterval: 10_000,
+  });
+}
+
+export function useCreateTriggerMutation() {
+  return useMutation({
+    mutationFn: createTriggerOrder,
   });
 }

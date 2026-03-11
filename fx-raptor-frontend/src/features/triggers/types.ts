@@ -1,11 +1,22 @@
-import { ApiListResponse } from "@/types/common";
-
-export type Trigger = {
-  id: string;
-  pair: string;
-  triggerType: "STOP" | "LIMIT";
+export type TriggerOrderRequest = {
+  accountId: string | number;
+  currencyPair: string;
+  side: "BUY" | "SELL";
+  triggerType: "STOP" | "TAKE_PROFIT";
   triggerPrice: number;
-  status: "ARMED" | "FIRED" | "CANCELLED";
+  quantity: number;
 };
 
-export type TriggersResponse = ApiListResponse<Trigger>;
+export type TriggerOrderResponse = {
+  triggerOrderId: string | number;
+  status: string;
+  message: string;
+  createdAt: string;
+};
+
+export type Quote = {
+  currencyPair: string;
+  bid: number;
+  ask: number;
+  timestamp: string;
+};
