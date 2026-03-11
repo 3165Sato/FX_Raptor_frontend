@@ -1,6 +1,6 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
-import { getPositions } from "./api";
+import { getPositions, getTraderPositions } from "./api";
 import { defaultPositionFilters, PositionFilters } from "./types";
 
 export function usePositionsQuery(filters: PositionFilters = defaultPositionFilters) {
@@ -8,5 +8,13 @@ export function usePositionsQuery(filters: PositionFilters = defaultPositionFilt
     queryKey: ["positions", filters],
     queryFn: () => getPositions(filters),
     placeholderData: keepPreviousData,
+  });
+}
+
+export function useTraderPositionsQuery(accountId: string | number) {
+  return useQuery({
+    queryKey: ["trader-positions", accountId],
+    queryFn: () => getTraderPositions(accountId),
+    enabled: accountId !== "",
   });
 }

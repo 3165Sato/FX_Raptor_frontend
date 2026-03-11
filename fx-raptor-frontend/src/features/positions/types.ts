@@ -12,6 +12,19 @@ export type Position = {
 
 export type PositionsResponse = ApiListResponse<Position>;
 
+export type TraderPositionView = {
+  positionId: string | number;
+  currencyPair: string;
+  side: "BUY" | "SELL";
+  quantity: number;
+  avgPrice: number;
+  currentPrice: number;
+  unrealizedPnL: number;
+  updatedAt?: string;
+};
+
+export type TraderPositionsResponse = ApiListResponse<TraderPositionView>;
+
 export type PositionFilters = {
   accountId: string;
   currencyPair: string;
