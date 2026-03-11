@@ -14,6 +14,19 @@ export type Order = {
 
 export type OrdersResponse = ApiListResponse<Order>;
 
+export type TraderOrderView = {
+  orderId: string | number;
+  currencyPair: string;
+  side: "BUY" | "SELL";
+  orderType: string;
+  quantity: number;
+  status: string;
+  sourceType: "USER" | "TRIGGER" | "LIQUIDATION" | string;
+  createdAt: string;
+};
+
+export type TraderOrdersResponse = ApiListResponse<TraderOrderView>;
+
 export type MarketOrderRequest = {
   accountId: string | number;
   currencyPair: string;
@@ -45,6 +58,20 @@ export type OrderFilters = {
 export const defaultOrderFilters: OrderFilters = {
   accountId: "",
   currencyPair: "",
+  status: "",
+  sourceType: "",
+};
+
+export type TraderOrderFilters = {
+  currencyPair: string;
+  side: string;
+  status: string;
+  sourceType: string;
+};
+
+export const defaultTraderOrderFilters: TraderOrderFilters = {
+  currencyPair: "",
+  side: "",
   status: "",
   sourceType: "",
 };

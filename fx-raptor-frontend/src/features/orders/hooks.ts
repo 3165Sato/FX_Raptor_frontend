@@ -1,7 +1,12 @@
 import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query";
 
-import { getOrders, getQuote, submitMarketOrder } from "./api";
-import { defaultOrderFilters, OrderFilters } from "./types";
+import { getOrders, getQuote, getTraderOrders, submitMarketOrder } from "./api";
+import {
+  defaultOrderFilters,
+  defaultTraderOrderFilters,
+  OrderFilters,
+  TraderOrderFilters,
+} from "./types";
 
 export function useOrdersQuery(filters: OrderFilters = defaultOrderFilters) {
   return useQuery({
@@ -23,5 +28,17 @@ export function useQuoteQuery(currencyPair: string) {
 export function useMarketOrderMutation() {
   return useMutation({
     mutationFn: submitMarketOrder,
+  });
+}
+
+export function useTraderOrdersQuery(
+  accountId: string | number,
+  filters: TraderOrderFilters = defaultTraderOrderFilters,
+) {
+  return useQuery({
+    queryKey: ["trader-orders", accountId, filters],
+    queryFn: () => getTraderOrders(accountId, filters),
+    enabled: accountId !== "",
+    placeholderData: keepPreviousData,
   });
 }

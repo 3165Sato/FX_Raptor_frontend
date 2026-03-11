@@ -2,12 +2,16 @@ import { apiClient } from "@/lib/apiClient";
 
 import {
   defaultOrderFilters,
+  defaultTraderOrderFilters,
   MarketOrderRequest,
   MarketOrderResponse,
   Order,
   OrderFilters,
   OrdersResponse,
   Quote,
+  TraderOrderFilters,
+  TraderOrdersResponse,
+  TraderOrderView,
 } from "./types";
 
 const mockOrders: Order[] = [
@@ -89,6 +93,75 @@ const mockQuotes: Record<string, Quote> = {
   },
 };
 
+const mockTraderOrdersByAccount: Record<string, TraderOrderView[]> = {
+  "A-100": [
+    {
+      orderId: "ORD-10001",
+      currencyPair: "USD/JPY",
+      side: "BUY",
+      orderType: "MARKET",
+      quantity: 100000,
+      status: "FILLED",
+      sourceType: "USER",
+      createdAt: "2026-03-10T09:15:00+09:00",
+    },
+    {
+      orderId: "ORD-10002",
+      currencyPair: "EUR/JPY",
+      side: "SELL",
+      orderType: "STOP",
+      quantity: 50000,
+      status: "NEW",
+      sourceType: "TRIGGER",
+      createdAt: "2026-03-10T09:30:00+09:00",
+    },
+    {
+      orderId: "ORD-10009",
+      currencyPair: "USD/JPY",
+      side: "SELL",
+      orderType: "MARKET",
+      quantity: 30000,
+      status: "CANCELLED",
+      sourceType: "USER",
+      createdAt: "2026-03-11T09:05:00+09:00",
+    },
+  ],
+  "A-220": [
+    {
+      orderId: "ORD-10003",
+      currencyPair: "GBP/JPY",
+      side: "SELL",
+      orderType: "MARKET",
+      quantity: 75000,
+      status: "FILLED",
+      sourceType: "LIQUIDATION",
+      createdAt: "2026-03-10T10:02:00+09:00",
+    },
+    {
+      orderId: "ORD-10005",
+      currencyPair: "EUR/USD",
+      side: "BUY",
+      orderType: "MARKET",
+      quantity: 120000,
+      status: "NEW",
+      sourceType: "TRIGGER",
+      createdAt: "2026-03-10T11:05:00+09:00",
+    },
+  ],
+  "A-305": [
+    {
+      orderId: "ORD-10004",
+      currencyPair: "USD/JPY",
+      side: "BUY",
+      orderType: "LIMIT",
+      quantity: 30000,
+      status: "CANCELLED",
+      sourceType: "USER",
+      createdAt: "2026-03-10T10:18:00+09:00",
+    },
+  ],
+};
+
 function applyFilters(orders: Order[], filters: OrderFilters) {
   return orders.filter((order) => {
     const accountMatches =
@@ -154,6 +227,45 @@ export async function submitMarketOrder(payload: MarketOrderRequest) {
       status: "ACCEPTED",
       message: `${payload.currencyPair} ${payload.side} ${payload.quantity.toLocaleString("ja-JP")} accepted`,
       acceptedAt: new Date().toISOString(),
+    };
+  }
+}
+
+function applyTraderFilters(orders: TraderOrderView[], filters: TraderOrderFilters) {
+  return orders.filter((order) => {
+    const pairMatches =
+      !filters.currencyPair ||
+      order.currencyPair.toLowerCase().includes(filters.currencyPair.toLowerCase());
+    const sideMatches = !filters.side || order.side === filters.side;
+    const statusMatches = !filters.status || order.status === filters.status;
+    const sourceMatches = !filters.sourceType || order.sourceType === filters.sourceType;
+
+    return pairMatches && sideMatches && statusMatches && sourceMatches;
+  });
+}
+
+export async function getTraderOrders(
+  accountId: string | number,
+  filters: TraderOrderFilters = defaultTraderOrderFilters,
+) {
+  try {
+    return await apiClient<TraderOrdersResponse>("/api/orders", {
+      query: {
+        accountId,
+        currencyPair: filters.currencyPair,
+        side: filters.side,
+        status: filters.status,
+        sourceType: filters.sourceType,
+      },
+    });
+  } catch {
+    const accountOrders =
+      mockTraderOrdersByAccount[String(accountId)] ?? mockTraderOrdersByAccount["A-100"];
+    const items = applyTraderFilters(accountOrders, filters);
+
+    return {
+      items,
+      total: items.length,
     };
   }
 }
