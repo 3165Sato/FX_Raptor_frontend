@@ -14,6 +14,7 @@ type OrderFiltersProps = {
 
 const statusOptions = ["", "PENDING", "PROCESSING", "FILLED", "CANCELLED", "REJECTED"];
 const sourceOptions = ["", "USER", "TRIGGER", "LIQUIDATION"];
+const sideOptions = ["", "BUY", "SELL"];
 
 export function OrderFilters({ value, onChange, onSearch, onReset }: OrderFiltersProps) {
   function handleFieldChange(event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
@@ -30,7 +31,7 @@ export function OrderFilters({ value, onChange, onSearch, onReset }: OrderFilter
       <div className="flex items-start justify-between gap-4">
         <div>
           <h2 className="text-lg font-semibold text-slate-900">フィルタ</h2>
-          <p className="mt-1 text-sm text-slate-500">口座、通貨ペア、ステータス、発生元で注文を絞り込みます。</p>
+          <p className="mt-1 text-sm text-slate-500">注文 ID、口座、通貨ペア、売買区分、状態、発生元で絞り込みます。</p>
         </div>
         <button
           type="button"
@@ -41,7 +42,17 @@ export function OrderFilters({ value, onChange, onSearch, onReset }: OrderFilter
         </button>
       </div>
 
-      <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+        <label className="space-y-2">
+          <span className="text-sm font-medium text-slate-700">orderId</span>
+          <input
+            name="orderId"
+            value={value.orderId}
+            onChange={handleFieldChange}
+            placeholder="ORD-10001"
+            className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none ring-0 transition placeholder:text-slate-400 focus:border-cyan-500"
+          />
+        </label>
         <label className="space-y-2">
           <span className="text-sm font-medium text-slate-700">accountId</span>
           <input
@@ -52,7 +63,6 @@ export function OrderFilters({ value, onChange, onSearch, onReset }: OrderFilter
             className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none ring-0 transition placeholder:text-slate-400 focus:border-cyan-500"
           />
         </label>
-
         <label className="space-y-2">
           <span className="text-sm font-medium text-slate-700">currencyPair</span>
           <input
@@ -63,7 +73,21 @@ export function OrderFilters({ value, onChange, onSearch, onReset }: OrderFilter
             className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none ring-0 transition placeholder:text-slate-400 focus:border-cyan-500"
           />
         </label>
-
+        <label className="space-y-2">
+          <span className="text-sm font-medium text-slate-700">side</span>
+          <select
+            name="side"
+            value={value.side}
+            onChange={handleFieldChange}
+            className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-cyan-500"
+          >
+            {sideOptions.map((side) => (
+              <option key={side || "all"} value={side}>
+                {side || "すべて"}
+              </option>
+            ))}
+          </select>
+        </label>
         <label className="space-y-2">
           <span className="text-sm font-medium text-slate-700">status</span>
           <select
@@ -79,8 +103,7 @@ export function OrderFilters({ value, onChange, onSearch, onReset }: OrderFilter
             ))}
           </select>
         </label>
-
-        <label className="space-y-2">
+        <label className="space-y-2 xl:col-span-2">
           <span className="text-sm font-medium text-slate-700">sourceType</span>
           <select
             name="sourceType"

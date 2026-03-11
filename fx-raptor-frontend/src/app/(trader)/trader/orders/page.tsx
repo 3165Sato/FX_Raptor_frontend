@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 
-import { LoadingSpinner } from "@/components/common/LoadingSpinner";
+import { EmptyState } from "@/components/common/EmptyState";
+import { LoadingState } from "@/components/common/LoadingState";
+import { PageHeader } from "@/components/common/PageHeader";
 import { Header } from "@/components/layout/Header";
 import { TraderOrderFilters } from "@/features/orders/components/TraderOrderFilters";
 import { TraderOrdersTable } from "@/features/orders/components/TraderOrdersTable";
@@ -42,23 +44,17 @@ export default function TraderOrdersPage() {
       />
       <main className="space-y-6 p-6">
         {isLoading ? (
-          <div className="flex min-h-64 items-center justify-center rounded-[2rem] border border-slate-200 bg-white shadow-sm">
-            <LoadingSpinner />
-          </div>
+          <LoadingState minHeightClassName="min-h-64" />
         ) : (
           <>
-            {isFetching ? (
-              <div className="flex justify-end">
-                <LoadingSpinner />
-              </div>
-            ) : null}
+            {isFetching ? <div className="flex justify-end text-sm text-slate-500">Updating...</div> : null}
 
             <TraderOrderSummaryCards orders={orders} />
 
-            <section className="rounded-[2rem] border border-amber-100 bg-amber-50/70 px-5 py-4 text-sm text-slate-600">
-              <p className="font-medium text-slate-800">注文ステータスの見方</p>
-              <p className="mt-1">NEW は受付済み、FILLED は約定済み、TRIGGER はトリガー由来の注文を示します。</p>
-            </section>
+            <PageHeader
+              title="関連画面"
+              description="注文 ID をクリックすると、対応する約定履歴を同じ条件で確認できます。"
+            />
 
             <TraderOrderFilters
               value={draftFilters}
@@ -67,23 +63,17 @@ export default function TraderOrdersPage() {
               onReset={handleReset}
             />
 
-            <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
-              <div className="mb-5 flex items-center justify-between gap-4">
-                <div>
+            {orders.length === 0 ? (
+              <EmptyState title="注文履歴がありません" description="フィルタ条件を変更するか、API 接続後に再確認してください。" />
+            ) : (
+              <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+                <div className="mb-5">
                   <h2 className="text-lg font-semibold text-slate-900">注文一覧</h2>
-                  <p className="mt-1 text-sm text-slate-500">直近の注文履歴を表示しています。</p>
+                  <p className="mt-1 text-sm text-slate-500">注文 ID から関連する約定履歴へ移動できます。</p>
                 </div>
-              </div>
-
-              {orders.length === 0 ? (
-                <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-6 py-12 text-center">
-                  <h3 className="text-lg font-semibold text-slate-900">注文履歴がありません</h3>
-                  <p className="mt-2 text-sm text-slate-500">フィルタ条件を変更するか、API 接続後に再確認してください。</p>
-                </div>
-              ) : (
                 <TraderOrdersTable orders={orders} />
-              )}
-            </section>
+              </section>
+            )}
           </>
         )}
       </main>

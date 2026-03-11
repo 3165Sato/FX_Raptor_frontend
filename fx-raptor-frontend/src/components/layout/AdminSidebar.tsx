@@ -7,7 +7,7 @@ import { useSessionStore } from "@/stores/sessionStore";
 import { useUiStore } from "@/stores/uiStore";
 
 const adminLinks = [
-  { href: "/admin", label: "Overview" },
+  { href: "/admin", label: "Dashboard" },
   { href: "/admin/accounts", label: "Accounts" },
   { href: "/admin/orders", label: "Orders" },
   { href: "/admin/trades", label: "Trades" },
@@ -29,7 +29,7 @@ export function AdminSidebar() {
       <div className="rounded-3xl bg-white/5 p-5">
         <p className="text-xs uppercase tracking-[0.24em] text-cyan-300">FX Raptor</p>
         <h2 className="mt-2 text-2xl font-semibold">Admin Console</h2>
-        <p className="mt-2 text-sm text-slate-400">運用監視・照会に必要な導線だけを先に固定します。</p>
+        <p className="mt-2 text-sm text-slate-400">監視と照会に必要な一覧導線をまとめています。</p>
       </div>
 
       <nav className="mt-8 space-y-2">
@@ -50,6 +50,10 @@ export function AdminSidebar() {
           );
         })}
       </nav>
+
+      <div className="mt-8 rounded-2xl border border-white/10 bg-white/5 p-4 text-xs text-slate-400">
+        ID クリックで関連一覧へ移動できるように導線を整備しています。
+      </div>
     </aside>
   );
 }

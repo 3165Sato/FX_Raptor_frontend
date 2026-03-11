@@ -49,15 +49,19 @@ export type Quote = {
 };
 
 export type OrderFilters = {
+  orderId: string;
   accountId: string;
   currencyPair: string;
+  side: string;
   status: string;
   sourceType: string;
 };
 
 export const defaultOrderFilters: OrderFilters = {
+  orderId: "",
   accountId: "",
   currencyPair: "",
+  side: "",
   status: "",
   sourceType: "",
 };

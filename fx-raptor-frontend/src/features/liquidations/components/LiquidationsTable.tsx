@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { DataTable } from "@/components/common/DataTable";
 import { StatusBadge } from "@/components/common/StatusBadge";
 import { formatDateTime, formatNumber, formatPercent } from "@/lib/formatters";
@@ -30,12 +32,20 @@ export function LiquidationsTable({ items }: LiquidationsTableProps) {
     <DataTable
       columns={[
         { key: "liquidationLogId", header: "liquidationLogId" },
-        { key: "accountId", header: "accountId" },
+        {
+          key: "accountId",
+          header: "accountId",
+          render: (item) => (
+            <Link href={`/admin/accounts?accountId=${encodeURIComponent(String(item.accountId))}`} className="font-medium text-cyan-700 hover:underline">
+              {item.accountId}
+            </Link>
+          ),
+        },
         { key: "orderId", header: "orderId" },
         {
           key: "tradeId",
           header: "tradeId",
-          render: (item) => (item.tradeId === null || item.tradeId === undefined ? "-" : String(item.tradeId)),
+          render: (item) => (item.tradeId == null ? "-" : String(item.tradeId)),
         },
         { key: "currencyPair", header: "currencyPair" },
         {
@@ -55,11 +65,7 @@ export function LiquidationsTable({ items }: LiquidationsTableProps) {
           key: "marginRatioAtLiquidation",
           header: "維持率",
           render: (item) => (
-            <span
-              className={
-                item.marginRatioAtLiquidation < 50 ? "font-semibold text-rose-700" : "font-semibold text-amber-700"
-              }
-            >
+            <span className={item.marginRatioAtLiquidation < 50 ? "font-semibold text-rose-700" : "font-semibold text-amber-700"}>
               {formatPercent(item.marginRatioAtLiquidation)}
             </span>
           ),

@@ -26,6 +26,7 @@ export type TraderTradeView = {
 export type TraderTradesResponse = ApiListResponse<TraderTradeView>;
 
 export type TradeFilters = {
+  tradeId: string;
   accountId: string;
   currencyPair: string;
   side: string;
@@ -33,6 +34,7 @@ export type TradeFilters = {
 };
 
 export const defaultTradeFilters: TradeFilters = {
+  tradeId: "",
   accountId: "",
   currencyPair: "",
   side: "",

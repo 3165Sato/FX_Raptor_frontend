@@ -164,15 +164,31 @@ const mockTraderOrdersByAccount: Record<string, TraderOrderView[]> = {
 
 function applyFilters(orders: Order[], filters: OrderFilters) {
   return orders.filter((order) => {
+    const orderMatches =
+      !filters.orderId || String(order.orderId).toLowerCase().includes(filters.orderId.toLowerCase());
     const accountMatches =
       !filters.accountId || String(order.accountId).toLowerCase().includes(filters.accountId.toLowerCase());
     const pairMatches =
       !filters.currencyPair ||
       order.currencyPair.toLowerCase().includes(filters.currencyPair.toLowerCase());
+    const sideMatches = !filters.side || order.side === filters.side;
     const statusMatches = !filters.status || order.status === filters.status;
     const sourceMatches = !filters.sourceType || order.sourceType === filters.sourceType;
 
-    return accountMatches && pairMatches && statusMatches && sourceMatches;
+    return orderMatches && accountMatches && pairMatches && sideMatches && statusMatches && sourceMatches;
+  });
+}
+
+function applyTraderFilters(orders: TraderOrderView[], filters: TraderOrderFilters) {
+  return orders.filter((order) => {
+    const pairMatches =
+      !filters.currencyPair ||
+      order.currencyPair.toLowerCase().includes(filters.currencyPair.toLowerCase());
+    const sideMatches = !filters.side || order.side === filters.side;
+    const statusMatches = !filters.status || order.status === filters.status;
+    const sourceMatches = !filters.sourceType || order.sourceType === filters.sourceType;
+
+    return pairMatches && sideMatches && statusMatches && sourceMatches;
   });
 }
 
@@ -180,8 +196,10 @@ export async function getOrders(filters: OrderFilters = defaultOrderFilters) {
   try {
     return await apiClient<OrdersResponse>("/admin/orders", {
       query: {
+        orderId: filters.orderId,
         accountId: filters.accountId,
         currencyPair: filters.currencyPair,
+        side: filters.side,
         status: filters.status,
         sourceType: filters.sourceType,
       },
@@ -229,19 +247,6 @@ export async function submitMarketOrder(payload: MarketOrderRequest) {
       acceptedAt: new Date().toISOString(),
     };
   }
-}
-
-function applyTraderFilters(orders: TraderOrderView[], filters: TraderOrderFilters) {
-  return orders.filter((order) => {
-    const pairMatches =
-      !filters.currencyPair ||
-      order.currencyPair.toLowerCase().includes(filters.currencyPair.toLowerCase());
-    const sideMatches = !filters.side || order.side === filters.side;
-    const statusMatches = !filters.status || order.status === filters.status;
-    const sourceMatches = !filters.sourceType || order.sourceType === filters.sourceType;
-
-    return pairMatches && sideMatches && statusMatches && sourceMatches;
-  });
 }
 
 export async function getTraderOrders(

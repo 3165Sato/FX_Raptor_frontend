@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { DataTable } from "@/components/common/DataTable";
 import { StatusBadge } from "@/components/common/StatusBadge";
 import { formatDateTime, formatNumber, formatPrice } from "@/lib/formatters";
@@ -50,7 +52,15 @@ export function CoversTable({ items }: CoversTableProps) {
     <DataTable
       columns={[
         { key: "coverOrderId", header: "coverOrderId" },
-        { key: "tradeId", header: "tradeId" },
+        {
+          key: "tradeId",
+          header: "tradeId",
+          render: (item) => (
+            <Link href={`/admin/trades?tradeId=${encodeURIComponent(String(item.tradeId))}`} className="font-medium text-cyan-700 hover:underline">
+              {item.tradeId}
+            </Link>
+          ),
+        },
         { key: "accountId", header: "accountId" },
         { key: "currencyPair", header: "currencyPair" },
         {

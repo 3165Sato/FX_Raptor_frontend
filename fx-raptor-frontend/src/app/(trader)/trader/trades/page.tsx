@@ -1,8 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
+import { useSearchParams } from "next/navigation";
 
-import { LoadingSpinner } from "@/components/common/LoadingSpinner";
+import { EmptyState } from "@/components/common/EmptyState";
+import { LoadingState } from "@/components/common/LoadingState";
 import { Header } from "@/components/layout/Header";
 import { TraderTradeFilters } from "@/features/trades/components/TraderTradeFilters";
 import { TraderTradeSummaryCards } from "@/features/trades/components/TraderTradeSummaryCards";
@@ -16,11 +18,21 @@ import { useSessionStore } from "@/stores/sessionStore";
 
 const fallbackAccountId = "A-100";
 
-export default function TraderTradesPage() {
+function readFilters(searchParams: URLSearchParams): TraderTradeFilterValues {
+  return {
+    currencyPair: searchParams.get("currencyPair") ?? "",
+    side: searchParams.get("side") ?? "",
+    orderId: searchParams.get("orderId") ?? "",
+  };
+}
+
+function TraderTradesContent() {
   const selectedAccountId = useSessionStore((state) => state.selectedAccountId);
   const accountId = selectedAccountId ?? fallbackAccountId;
-  const [draftFilters, setDraftFilters] = useState(defaultTraderTradeFilters);
-  const [appliedFilters, setAppliedFilters] = useState<TraderTradeFilterValues>(defaultTraderTradeFilters);
+  const searchParams = useSearchParams();
+  const initialFilters = readFilters(searchParams);
+  const [draftFilters, setDraftFilters] = useState(initialFilters);
+  const [appliedFilters, setAppliedFilters] = useState<TraderTradeFilterValues>(initialFilters);
   const { data, isLoading, isFetching } = useTraderTradesQuery(accountId, appliedFilters);
 
   const trades = data?.items ?? [];
@@ -42,16 +54,10 @@ export default function TraderTradesPage() {
       />
       <main className="space-y-6 p-6">
         {isLoading ? (
-          <div className="flex min-h-64 items-center justify-center rounded-[2rem] border border-slate-200 bg-white shadow-sm">
-            <LoadingSpinner />
-          </div>
+          <LoadingState minHeightClassName="min-h-64" />
         ) : (
           <>
-            {isFetching ? (
-              <div className="flex justify-end">
-                <LoadingSpinner />
-              </div>
-            ) : null}
+            {isFetching ? <div className="flex justify-end text-sm text-slate-500">Updating...</div> : null}
 
             <TraderTradeSummaryCards trades={trades} />
 
@@ -62,26 +68,28 @@ export default function TraderTradesPage() {
               onReset={handleReset}
             />
 
-            <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
-              <div className="mb-5 flex items-center justify-between gap-4">
-                <div>
+            {trades.length === 0 ? (
+              <EmptyState title="約定履歴がありません" description="フィルタ条件を変更するか、API 接続後に再確認してください。" />
+            ) : (
+              <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+                <div className="mb-5">
                   <h2 className="text-lg font-semibold text-slate-900">約定一覧</h2>
-                  <p className="mt-1 text-sm text-slate-500">注文 ID ごとの約定結果を確認できます。</p>
+                  <p className="mt-1 text-sm text-slate-500">注文 ID を指定すると、関連する約定だけを確認できます。</p>
                 </div>
-              </div>
-
-              {trades.length === 0 ? (
-                <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-6 py-12 text-center">
-                  <h3 className="text-lg font-semibold text-slate-900">約定履歴がありません</h3>
-                  <p className="mt-2 text-sm text-slate-500">フィルタ条件を変更するか、API 接続後に再確認してください。</p>
-                </div>
-              ) : (
                 <TraderTradesTable trades={trades} />
-              )}
-            </section>
+              </section>
+            )}
           </>
         )}
       </main>
     </div>
+  );
+}
+
+export default function TraderTradesPage() {
+  return (
+    <Suspense fallback={<div className="p-6"><LoadingState minHeightClassName="min-h-64" /></div>}>
+      <TraderTradesContent />
+    </Suspense>
   );
 }

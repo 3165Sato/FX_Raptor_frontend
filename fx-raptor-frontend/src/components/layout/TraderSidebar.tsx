@@ -7,7 +7,6 @@ import { useSessionStore } from "@/stores/sessionStore";
 import { useUiStore } from "@/stores/uiStore";
 
 const traderLinks = [
-  { href: "/trader", label: "Overview" },
   { href: "/trader/order", label: "Order" },
   { href: "/trader/trigger", label: "Trigger" },
   { href: "/trader/account", label: "Account" },
@@ -28,7 +27,7 @@ export function TraderSidebar() {
       <div className="rounded-3xl bg-white/5 p-5">
         <p className="text-xs uppercase tracking-[0.24em] text-amber-300">FX Raptor</p>
         <h2 className="mt-2 text-2xl font-semibold">Trader Console</h2>
-        <p className="mt-2 text-sm text-slate-400">発注と約定確認に必要な画面を先に分離します。</p>
+        <p className="mt-2 text-sm text-slate-400">発注、口座確認、履歴確認を迷わず移動できる構成です。</p>
       </div>
 
       <nav className="mt-8 space-y-2">
@@ -49,6 +48,10 @@ export function TraderSidebar() {
           );
         })}
       </nav>
+
+      <div className="mt-8 rounded-2xl border border-white/10 bg-white/5 p-4 text-xs text-slate-400">
+        Header の account selector で表示対象口座を切り替えられます。
+      </div>
     </aside>
   );
 }

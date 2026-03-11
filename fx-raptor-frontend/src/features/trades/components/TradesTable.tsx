@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { DataTable } from "@/components/common/DataTable";
 import { formatDateTime, formatNumber, formatPrice } from "@/lib/formatters";
 
@@ -12,8 +14,30 @@ export function TradesTable({ trades }: TradesTableProps) {
     <DataTable
       columns={[
         { key: "tradeId", header: "約定ID" },
-        { key: "orderId", header: "注文ID" },
-        { key: "accountId", header: "口座ID" },
+        {
+          key: "orderId",
+          header: "注文ID",
+          render: (trade) => (
+            <Link
+              href={`/admin/orders?orderId=${encodeURIComponent(String(trade.orderId))}`}
+              className="font-medium text-cyan-700 hover:underline"
+            >
+              {trade.orderId}
+            </Link>
+          ),
+        },
+        {
+          key: "accountId",
+          header: "口座ID",
+          render: (trade) => (
+            <Link
+              href={`/admin/accounts?accountId=${encodeURIComponent(String(trade.accountId))}`}
+              className="font-medium text-cyan-700 hover:underline"
+            >
+              {trade.accountId}
+            </Link>
+          ),
+        },
         { key: "currencyPair", header: "通貨ペア" },
         {
           key: "side",

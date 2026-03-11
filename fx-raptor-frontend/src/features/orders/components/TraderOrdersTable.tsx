@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { DataTable } from "@/components/common/DataTable";
 import { StatusBadge } from "@/components/common/StatusBadge";
 import { formatDateTime, formatNumber } from "@/lib/formatters";
@@ -40,7 +42,18 @@ export function TraderOrdersTable({ orders }: TraderOrdersTableProps) {
   return (
     <DataTable
       columns={[
-        { key: "orderId", header: "orderId" },
+        {
+          key: "orderId",
+          header: "orderId",
+          render: (order) => (
+            <Link
+              href={`/trader/trades?orderId=${encodeURIComponent(String(order.orderId))}`}
+              className="font-medium text-cyan-700 hover:underline"
+            >
+              {order.orderId}
+            </Link>
+          ),
+        },
         { key: "currencyPair", header: "currencyPair" },
         {
           key: "side",

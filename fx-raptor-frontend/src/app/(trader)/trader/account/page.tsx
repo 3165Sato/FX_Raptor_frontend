@@ -1,6 +1,10 @@
 "use client";
 
-import { LoadingSpinner } from "@/components/common/LoadingSpinner";
+import Link from "next/link";
+
+import { EmptyState } from "@/components/common/EmptyState";
+import { LoadingState } from "@/components/common/LoadingState";
+import { PageHeader } from "@/components/common/PageHeader";
 import { Header } from "@/components/layout/Header";
 import { AccountDetailPanel } from "@/features/accounts/components/AccountDetailPanel";
 import { AccountSummaryCards } from "@/features/accounts/components/AccountSummaryCards";
@@ -23,21 +27,30 @@ export default function TraderAccountPage() {
       />
       <main className="space-y-6 p-6">
         {isLoading ? (
-          <div className="flex min-h-64 items-center justify-center rounded-[2rem] border border-slate-200 bg-white shadow-sm">
-            <LoadingSpinner />
-          </div>
+          <LoadingState minHeightClassName="min-h-64" />
         ) : !account ? (
-          <div className="rounded-[2rem] border border-dashed border-slate-300 bg-slate-50 px-6 py-12 text-center">
-            <h2 className="text-lg font-semibold text-slate-900">口座情報を取得できませんでした</h2>
-            <p className="mt-2 text-sm text-slate-500">API 接続後に再確認してください。</p>
-          </div>
+          <EmptyState title="口座情報を取得できませんでした" description="API 接続後に再確認してください。" />
         ) : (
           <>
-            {isFetching ? (
-              <div className="flex justify-end">
-                <LoadingSpinner />
-              </div>
-            ) : null}
+            {isFetching ? <div className="flex justify-end text-sm text-slate-500">Updating...</div> : null}
+
+            <PageHeader
+              title="関連画面"
+              description="口座状態から保有ポジション、注文履歴、約定履歴へそのまま移動できます。"
+              actions={
+                <>
+                  <Link href="/trader/positions" className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700">
+                    Positions
+                  </Link>
+                  <Link href="/trader/orders" className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700">
+                    Orders
+                  </Link>
+                  <Link href="/trader/trades" className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700">
+                    Trades
+                  </Link>
+                </>
+              }
+            />
 
             <AccountSummaryCards account={account} />
 

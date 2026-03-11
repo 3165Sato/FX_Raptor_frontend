@@ -27,10 +27,20 @@ export function TradeFilters({ value, onChange, onSearch, onReset }: TradeFilter
     <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
       <div>
         <h2 className="text-lg font-semibold text-slate-900">フィルタ</h2>
-        <p className="mt-1 text-sm text-slate-500">口座、通貨ペア、売買区分、注文 ID で約定を絞り込みます。</p>
+        <p className="mt-1 text-sm text-slate-500">約定 ID、口座、通貨ペア、売買区分、注文 ID で絞り込みます。</p>
       </div>
 
-      <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+        <label className="space-y-2">
+          <span className="text-sm font-medium text-slate-700">tradeId</span>
+          <input
+            name="tradeId"
+            value={value.tradeId}
+            onChange={handleFieldChange}
+            placeholder="TRD-90001"
+            className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none transition placeholder:text-slate-400 focus:border-cyan-500"
+          />
+        </label>
         <label className="space-y-2">
           <span className="text-sm font-medium text-slate-700">accountId</span>
           <input
@@ -41,7 +51,6 @@ export function TradeFilters({ value, onChange, onSearch, onReset }: TradeFilter
             className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none transition placeholder:text-slate-400 focus:border-cyan-500"
           />
         </label>
-
         <label className="space-y-2">
           <span className="text-sm font-medium text-slate-700">currencyPair</span>
           <input
@@ -52,7 +61,6 @@ export function TradeFilters({ value, onChange, onSearch, onReset }: TradeFilter
             className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none transition placeholder:text-slate-400 focus:border-cyan-500"
           />
         </label>
-
         <label className="space-y-2">
           <span className="text-sm font-medium text-slate-700">side</span>
           <select
@@ -68,7 +76,6 @@ export function TradeFilters({ value, onChange, onSearch, onReset }: TradeFilter
             ))}
           </select>
         </label>
-
         <label className="space-y-2">
           <span className="text-sm font-medium text-slate-700">orderId</span>
           <input

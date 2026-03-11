@@ -129,6 +129,8 @@ const mockTraderTradesByAccount: Record<string, TraderTradeView[]> = {
 
 function applyFilters(trades: Trade[], filters: TradeFilters) {
   return trades.filter((trade) => {
+    const tradeMatches =
+      !filters.tradeId || String(trade.tradeId).toLowerCase().includes(filters.tradeId.toLowerCase());
     const accountMatches =
       !filters.accountId || String(trade.accountId).toLowerCase().includes(filters.accountId.toLowerCase());
     const pairMatches =
@@ -138,7 +140,20 @@ function applyFilters(trades: Trade[], filters: TradeFilters) {
     const orderMatches =
       !filters.orderId || String(trade.orderId).toLowerCase().includes(filters.orderId.toLowerCase());
 
-    return accountMatches && pairMatches && sideMatches && orderMatches;
+    return tradeMatches && accountMatches && pairMatches && sideMatches && orderMatches;
+  });
+}
+
+function applyTraderTradeFilters(trades: TraderTradeView[], filters: TraderTradeFilters) {
+  return trades.filter((trade) => {
+    const pairMatches =
+      !filters.currencyPair ||
+      trade.currencyPair.toLowerCase().includes(filters.currencyPair.toLowerCase());
+    const sideMatches = !filters.side || trade.side === filters.side;
+    const orderMatches =
+      !filters.orderId || String(trade.orderId).toLowerCase().includes(filters.orderId.toLowerCase());
+
+    return pairMatches && sideMatches && orderMatches;
   });
 }
 
@@ -146,6 +161,7 @@ export async function getTrades(filters: TradeFilters = defaultTradeFilters) {
   try {
     return await apiClient<TradesResponse>("/admin/trades", {
       query: {
+        tradeId: filters.tradeId,
         accountId: filters.accountId,
         currencyPair: filters.currencyPair,
         side: filters.side,
@@ -160,19 +176,6 @@ export async function getTrades(filters: TradeFilters = defaultTradeFilters) {
       total: items.length,
     };
   }
-}
-
-function applyTraderTradeFilters(trades: TraderTradeView[], filters: TraderTradeFilters) {
-  return trades.filter((trade) => {
-    const pairMatches =
-      !filters.currencyPair ||
-      trade.currencyPair.toLowerCase().includes(filters.currencyPair.toLowerCase());
-    const sideMatches = !filters.side || trade.side === filters.side;
-    const orderMatches =
-      !filters.orderId || String(trade.orderId).toLowerCase().includes(filters.orderId.toLowerCase());
-
-    return pairMatches && sideMatches && orderMatches;
-  });
 }
 
 export async function getTraderTrades(

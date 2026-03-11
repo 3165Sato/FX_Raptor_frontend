@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { DataTable } from "@/components/common/DataTable";
 import { StatusBadge } from "@/components/common/StatusBadge";
 import { formatDateTime, formatNumber } from "@/lib/formatters";
@@ -40,8 +42,30 @@ export function OrdersTable({ orders }: OrdersTableProps) {
   return (
     <DataTable
       columns={[
-        { key: "orderId", header: "注文ID" },
-        { key: "accountId", header: "口座ID" },
+        {
+          key: "orderId",
+          header: "注文ID",
+          render: (order) => (
+            <Link
+              href={`/admin/orders?orderId=${encodeURIComponent(String(order.orderId))}`}
+              className="font-medium text-cyan-700 hover:underline"
+            >
+              {order.orderId}
+            </Link>
+          ),
+        },
+        {
+          key: "accountId",
+          header: "口座ID",
+          render: (order) => (
+            <Link
+              href={`/admin/accounts?accountId=${encodeURIComponent(String(order.accountId))}`}
+              className="font-medium text-cyan-700 hover:underline"
+            >
+              {order.accountId}
+            </Link>
+          ),
+        },
         { key: "currencyPair", header: "通貨ペア" },
         {
           key: "side",

@@ -8,17 +8,21 @@ import { TriggerOrderForm } from "@/features/triggers/components/TriggerOrderFor
 import { TriggerSubmitResult } from "@/features/triggers/components/TriggerSubmitResult";
 import { useCreateTriggerMutation, useTriggerQuoteQuery } from "@/features/triggers/hooks";
 import { TriggerOrderRequest, TriggerOrderResponse } from "@/features/triggers/types";
+import { useSessionStore } from "@/stores/sessionStore";
 
-const initialTriggerOrder: TriggerOrderRequest = {
-  accountId: "A-100",
-  currencyPair: "USD/JPY",
-  side: "BUY",
-  triggerType: "STOP",
-  triggerPrice: 149.15,
-  quantity: 10000,
-};
+const fallbackAccountId = "A-100";
 
 export default function TraderTriggerPage() {
+  const selectedAccountId = useSessionStore((state) => state.selectedAccountId) ?? fallbackAccountId;
+  const initialTriggerOrder: TriggerOrderRequest = {
+    accountId: selectedAccountId,
+    currencyPair: "USD/JPY",
+    side: "BUY",
+    triggerType: "STOP",
+    triggerPrice: 149.15,
+    quantity: 10000,
+  };
+
   const [selectedPair, setSelectedPair] = useState(initialTriggerOrder.currencyPair);
   const [submitResult, setSubmitResult] = useState<TriggerOrderResponse | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -58,6 +62,7 @@ export default function TraderTriggerPage() {
         <section className="grid gap-6 xl:grid-cols-[1.1fr_1fr]">
           <QuotePanel quote={quoteQuery.data} isLoading={quoteQuery.isLoading || quoteQuery.isFetching} />
           <TriggerOrderForm
+            key={String(selectedAccountId)}
             initialValue={initialTriggerOrder}
             onSubmit={handleSubmit}
             isSubmitting={createTriggerMutation.isPending}
