@@ -6,7 +6,12 @@ type ApiClientOptions = Omit<RequestInit, "body"> & {
 const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 function buildUrl(path: string, query?: ApiClientOptions["query"]) {
-  const url = new URL(path, baseUrl ?? "http://localhost:8080");
+  const normalizedBaseUrl = (baseUrl ?? "http://localhost:18080").replace(
+    /\/+$/,
+    "",
+  );
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+  const url = new URL(normalizedPath, normalizedBaseUrl);
 
   if (query) {
     for (const [key, value] of Object.entries(query)) {
@@ -31,7 +36,10 @@ export class ApiError extends Error {
   }
 }
 
-export async function apiClient<T>(path: string, options: ApiClientOptions = {}): Promise<T> {
+export async function apiClient<T>(
+  path: string,
+  options: ApiClientOptions = {},
+): Promise<T> {
   const { headers, body, query, ...init } = options;
   const response = await fetch(buildUrl(path, query), {
     ...init,
@@ -49,7 +57,11 @@ export async function apiClient<T>(path: string, options: ApiClientOptions = {})
     : await response.text();
 
   if (!response.ok) {
-    throw new ApiError(`API request failed: ${response.status}`, response.status, payload);
+    throw new ApiError(
+      `API request failed: ${response.status}`,
+      response.status,
+      payload,
+    );
   }
 
   return payload as T;

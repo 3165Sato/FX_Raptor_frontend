@@ -16,6 +16,7 @@ function getStatusTone(status: string) {
       return "filled";
     case "PENDING":
     case "PROCESSING":
+    case "NEW":
       return "pending";
     case "REJECTED":
     case "CANCELLED":
@@ -69,7 +70,7 @@ export function OrdersTable({ orders }: OrdersTableProps) {
         { key: "currencyPair", header: "通貨ペア" },
         {
           key: "side",
-          header: "売買",
+          header: "売買区分",
           render: (order) => (
             <span className={order.side === "BUY" ? "font-semibold text-emerald-700" : "font-semibold text-rose-700"}>
               {order.side}
@@ -77,7 +78,11 @@ export function OrdersTable({ orders }: OrdersTableProps) {
           ),
         },
         { key: "orderType", header: "注文種別" },
-        { key: "quantity", header: "数量", render: (order) => formatNumber(order.quantity) },
+        {
+          key: "quantity",
+          header: "数量",
+          render: (order) => formatNumber(order.quantity),
+        },
         {
           key: "status",
           header: "ステータス",
@@ -88,7 +93,11 @@ export function OrdersTable({ orders }: OrdersTableProps) {
           header: "発生元",
           render: (order) => <StatusBadge label={order.sourceType} tone={getSourceTone(order.sourceType)} />,
         },
-        { key: "createdAt", header: "作成日時", render: (order) => formatDateTime(order.createdAt) },
+        {
+          key: "createdAt",
+          header: "作成日時",
+          render: (order) => formatDateTime(order.createdAt),
+        },
       ]}
       rows={orders}
     />

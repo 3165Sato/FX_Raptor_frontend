@@ -12,7 +12,7 @@ type OrderFiltersProps = {
   onReset: () => void;
 };
 
-const statusOptions = ["", "PENDING", "PROCESSING", "FILLED", "CANCELLED", "REJECTED"];
+const statusOptions = ["", "NEW", "PENDING", "PROCESSING", "FILLED", "CANCELLED", "REJECTED"];
 const sourceOptions = ["", "USER", "TRIGGER", "LIQUIDATION"];
 const sideOptions = ["", "BUY", "SELL"];
 
@@ -31,7 +31,9 @@ export function OrderFilters({ value, onChange, onSearch, onReset }: OrderFilter
       <div className="flex items-start justify-between gap-4">
         <div>
           <h2 className="text-lg font-semibold text-slate-900">フィルタ</h2>
-          <p className="mt-1 text-sm text-slate-500">注文 ID、口座、通貨ペア、売買区分、状態、発生元で絞り込みます。</p>
+          <p className="mt-1 text-sm text-slate-500">
+            注文ID、口座ID、通貨ペア、売買区分、ステータス、発生元で絞り込みます。
+          </p>
         </div>
         <button
           type="button"
@@ -49,8 +51,8 @@ export function OrderFilters({ value, onChange, onSearch, onReset }: OrderFilter
             name="orderId"
             value={value.orderId}
             onChange={handleFieldChange}
-            placeholder="ORD-10001"
-            className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none ring-0 transition placeholder:text-slate-400 focus:border-cyan-500"
+            placeholder="1"
+            className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none transition placeholder:text-slate-400 focus:border-cyan-500"
           />
         </label>
         <label className="space-y-2">
@@ -59,8 +61,8 @@ export function OrderFilters({ value, onChange, onSearch, onReset }: OrderFilter
             name="accountId"
             value={value.accountId}
             onChange={handleFieldChange}
-            placeholder="A-100"
-            className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none ring-0 transition placeholder:text-slate-400 focus:border-cyan-500"
+            placeholder="1"
+            className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none transition placeholder:text-slate-400 focus:border-cyan-500"
           />
         </label>
         <label className="space-y-2">
@@ -70,7 +72,7 @@ export function OrderFilters({ value, onChange, onSearch, onReset }: OrderFilter
             value={value.currencyPair}
             onChange={handleFieldChange}
             placeholder="USD/JPY"
-            className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none ring-0 transition placeholder:text-slate-400 focus:border-cyan-500"
+            className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none transition placeholder:text-slate-400 focus:border-cyan-500"
           />
         </label>
         <label className="space-y-2">

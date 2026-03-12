@@ -1,6 +1,6 @@
 import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query";
 
-import { getOrders, getQuote, getTraderOrders, submitMarketOrder } from "./api";
+import { getAdminOrders, getQuote, getTraderOrders, submitMarketOrder } from "./api";
 import {
   defaultOrderFilters,
   defaultTraderOrderFilters,
@@ -8,13 +8,15 @@ import {
   TraderOrderFilters,
 } from "./types";
 
-export function useOrdersQuery(filters: OrderFilters = defaultOrderFilters) {
+export function useAdminOrdersQuery(filters: OrderFilters = defaultOrderFilters) {
   return useQuery({
-    queryKey: ["orders", filters],
-    queryFn: () => getOrders(filters),
+    queryKey: ["admin-orders", filters],
+    queryFn: () => getAdminOrders(filters),
     placeholderData: keepPreviousData,
   });
 }
+
+export const useOrdersQuery = useAdminOrdersQuery;
 
 export function useQuoteQuery(currencyPair: string) {
   return useQuery({
