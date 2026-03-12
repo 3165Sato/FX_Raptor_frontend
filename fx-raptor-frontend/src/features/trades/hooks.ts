@@ -1,6 +1,6 @@
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+﻿import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
-import { getTrades, getTraderTrades } from "./api";
+import { getAdminTrades, getTraderTrades } from "./api";
 import {
   defaultTradeFilters,
   defaultTraderTradeFilters,
@@ -8,13 +8,15 @@ import {
   TraderTradeFilters,
 } from "./types";
 
-export function useTradesQuery(filters: TradeFilters = defaultTradeFilters) {
+export function useAdminTradesQuery(filters: TradeFilters = defaultTradeFilters) {
   return useQuery({
-    queryKey: ["trades", filters],
-    queryFn: () => getTrades(filters),
+    queryKey: ["admin-trades", filters],
+    queryFn: () => getAdminTrades(filters),
     placeholderData: keepPreviousData,
   });
 }
+
+export const useTradesQuery = useAdminTradesQuery;
 
 export function useTraderTradesQuery(
   accountId: string | number,

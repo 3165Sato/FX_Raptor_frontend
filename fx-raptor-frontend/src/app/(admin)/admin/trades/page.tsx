@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { Suspense, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -10,7 +10,7 @@ import { MetricCard } from "@/components/common/MetricCard";
 import { Header } from "@/components/layout/Header";
 import { TradeFilters } from "@/features/trades/components/TradeFilters";
 import { TradesTable } from "@/features/trades/components/TradesTable";
-import { useTradesQuery } from "@/features/trades/hooks";
+import { useAdminTradesQuery } from "@/features/trades/hooks";
 import { defaultTradeFilters, TradeFilters as TradeFilterValues } from "@/features/trades/types";
 import { formatNumber } from "@/lib/formatters";
 
@@ -42,7 +42,7 @@ function AdminTradesContent() {
   const searchParams = useSearchParams();
   const initialFilters = readFilters(searchParams);
   const [draftFilters, setDraftFilters] = useState<TradeFilterValues>(initialFilters);
-  const { data, isFetching, isLoading } = useTradesQuery(initialFilters);
+  const { data, isFetching, isLoading } = useAdminTradesQuery(initialFilters);
 
   const trades = data?.items ?? [];
   const buyCount = trades.filter((trade) => trade.side === "BUY").length;
@@ -62,13 +62,13 @@ function AdminTradesContent() {
     <div>
       <Header
         title="約定一覧"
-        description="管理者向けの約定照会画面です。口座 ID、注文 ID、約定 ID から関連一覧へ移動できます。"
+        description="管理者向けの約定履歴です。口座 ID、注文 ID、通貨ペアから一覧を確認できます。"
       />
       <main className="space-y-6 p-6">
         <SummaryGrid>
           <MetricCard label="表示件数" value={formatNumber(trades.length)} hint="現在のフィルタ結果" />
-          <MetricCard label="BUY 件数" value={formatNumber(buyCount)} hint="買い約定" />
-          <MetricCard label="SELL 件数" value={formatNumber(sellCount)} hint="売り約定" />
+          <MetricCard label="BUY 件数" value={formatNumber(buyCount)} hint="買い約定数" />
+          <MetricCard label="SELL 件数" value={formatNumber(sellCount)} hint="売り約定数" />
         </SummaryGrid>
 
         <TradeFilters
@@ -81,7 +81,7 @@ function AdminTradesContent() {
         {isLoading ? (
           <LoadingState />
         ) : trades.length === 0 ? (
-          <EmptyState title="約定がありません" description="フィルタ条件を変更するか、API 接続後に再確認してください。" />
+          <EmptyState title="約定がありません" description="フィルタ条件を見直すか、API 接続後に再度確認してください。" />
         ) : (
           <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
             <div className="mb-5 flex items-center justify-between gap-4">
