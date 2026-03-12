@@ -1,15 +1,17 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
-import { getPositions, getTraderPositions } from "./api";
+import { getAdminPositions, getTraderPositions } from "./api";
 import { defaultPositionFilters, PositionFilters } from "./types";
 
-export function usePositionsQuery(filters: PositionFilters = defaultPositionFilters) {
+export function useAdminPositionsQuery(filters: PositionFilters = defaultPositionFilters) {
   return useQuery({
-    queryKey: ["positions", filters],
-    queryFn: () => getPositions(filters),
+    queryKey: ["admin-positions", filters],
+    queryFn: () => getAdminPositions(filters),
     placeholderData: keepPreviousData,
   });
 }
+
+export const usePositionsQuery = useAdminPositionsQuery;
 
 export function useTraderPositionsQuery(accountId: string | number) {
   return useQuery({

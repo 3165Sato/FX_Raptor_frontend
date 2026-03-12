@@ -27,7 +27,7 @@ export function PositionFilters({ value, onChange, onSearch, onReset }: Position
     <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
       <div>
         <h2 className="text-lg font-semibold text-slate-900">フィルタ</h2>
-        <p className="mt-1 text-sm text-slate-500">口座、通貨ペア、売買区分で現在のポジションを絞り込みます。</p>
+        <p className="mt-1 text-sm text-slate-500">口座ID、通貨ペア、売買区分でポジションを絞り込みます。</p>
       </div>
 
       <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -37,7 +37,7 @@ export function PositionFilters({ value, onChange, onSearch, onReset }: Position
             name="accountId"
             value={value.accountId}
             onChange={handleFieldChange}
-            placeholder="A-100"
+            placeholder="1"
             className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none transition placeholder:text-slate-400 focus:border-cyan-500"
           />
         </label>

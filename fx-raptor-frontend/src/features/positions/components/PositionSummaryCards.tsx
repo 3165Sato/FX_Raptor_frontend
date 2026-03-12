@@ -14,10 +14,10 @@ export function PositionSummaryCards({ positions }: PositionSummaryCardsProps) {
 
   return (
     <section className="grid gap-4 lg:grid-cols-4">
-      <MetricCard label="総ポジション件数" value={formatNumber(positions.length)} hint="現在のフィルタ結果" />
-      <MetricCard label="BUY ポジション" value={formatNumber(buyCount)} hint="買い建玉件数" />
-      <MetricCard label="SELL ポジション" value={formatNumber(sellCount)} hint="売り建玉件数" />
-      <MetricCard label="通貨ペア数" value={formatNumber(pairCount)} hint="ユニークなペア数" />
+      <MetricCard label="総ポジション件数" value={formatNumber(positions.length)} hint="取得したポジション件数" />
+      <MetricCard label="BUY件数" value={formatNumber(buyCount)} hint="買いポジション" />
+      <MetricCard label="SELL件数" value={formatNumber(sellCount)} hint="売りポジション" />
+      <MetricCard label="通貨ペア数" value={formatNumber(pairCount)} hint="ユニーク通貨ペア数" />
     </section>
   );
 }

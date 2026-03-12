@@ -1,46 +1,83 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
-import { LoadingSpinner } from "@/components/common/LoadingSpinner";
+import { EmptyState } from "@/components/common/EmptyState";
+import { LoadingState } from "@/components/common/LoadingState";
 import { Header } from "@/components/layout/Header";
 import { PositionFilters } from "@/features/positions/components/PositionFilters";
 import { PositionSummaryCards } from "@/features/positions/components/PositionSummaryCards";
 import { PositionsTable } from "@/features/positions/components/PositionsTable";
-import { usePositionsQuery } from "@/features/positions/hooks";
+import { useAdminPositionsQuery } from "@/features/positions/hooks";
 import {
   defaultPositionFilters,
   PositionFilters as PositionFilterValues,
 } from "@/features/positions/types";
+import { ApiError } from "@/lib/apiClient";
 
-export default function AdminPositionsPage() {
-  const [draftFilters, setDraftFilters] = useState(defaultPositionFilters);
-  const [appliedFilters, setAppliedFilters] = useState<PositionFilterValues>(defaultPositionFilters);
-  const { data, isFetching, isLoading } = usePositionsQuery(appliedFilters);
+function readFilters(searchParams: URLSearchParams): PositionFilterValues {
+  return {
+    accountId: searchParams.get("accountId") ?? "",
+    currencyPair: searchParams.get("currencyPair") ?? "",
+    side: searchParams.get("side") ?? "",
+  };
+}
+
+function toQuery(filters: PositionFilterValues) {
+  const params = new URLSearchParams();
+
+  for (const [key, value] of Object.entries(filters)) {
+    if (value) {
+      params.set(key, value);
+    }
+  }
+
+  return params.toString();
+}
+
+function getErrorDescription(error: Error) {
+  if (error instanceof ApiError) {
+    return `API request failed: ${error.status}`;
+  }
+
+  return error.message || "ポジション一覧の取得に失敗しました。";
+}
+
+type AdminPositionsViewProps = {
+  filters: PositionFilterValues;
+};
+
+function AdminPositionsView({ filters }: AdminPositionsViewProps) {
+  const pathname = usePathname();
+  const router = useRouter();
+  const [draftFilters, setDraftFilters] = useState<PositionFilterValues>(filters);
+  const { data, isFetching, isLoading, isError, error } = useAdminPositionsQuery(filters);
 
   const positions = data?.items ?? [];
 
   function handleSearch() {
-    setAppliedFilters(draftFilters);
+    const query = toQuery(draftFilters);
+    router.push(query ? `${pathname}?${query}` : pathname);
   }
 
   function handleReset() {
     setDraftFilters(defaultPositionFilters);
-    setAppliedFilters(defaultPositionFilters);
+    router.push(pathname);
   }
 
   return (
     <div>
       <Header
         title="ポジション一覧"
-        description="管理者向けの建玉照会画面です。数量と平均取得単価を中心に現在の保有状況を確認できます。"
+        description="Spring Boot の GET /admin/positions からポジション一覧を取得して表示します。"
       />
       <main className="space-y-6 p-6">
         <PositionSummaryCards positions={positions} />
 
         <section className="rounded-[2rem] border border-cyan-100 bg-cyan-50/70 px-5 py-4 text-sm text-slate-600">
           <p className="font-medium text-slate-800">平均取得単価</p>
-          <p className="mt-1">同一ポジションに対する約定価格の加重平均として表示する想定です。</p>
+          <p className="mt-1">各ポジションに対する平均取得価格を表示しています。</p>
         </section>
 
         <PositionFilters
@@ -50,29 +87,50 @@ export default function AdminPositionsPage() {
           onReset={handleReset}
         />
 
-        <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
-          <div className="mb-5 flex items-center justify-between gap-4">
-            <div>
-              <h2 className="text-lg font-semibold text-slate-900">ポジションテーブル</h2>
-              <p className="mt-1 text-sm text-slate-500">API 未接続時はモックデータに自動で fallback します。</p>
+        {isLoading ? (
+          <LoadingState />
+        ) : isError ? (
+          <EmptyState title="ポジション一覧を取得できませんでした" description={getErrorDescription(error)} />
+        ) : positions.length === 0 ? (
+          <EmptyState
+            title="ポジションデータがありません"
+            description="フィルタ条件を見直すか、Spring Boot 側の /admin/positions レスポンスを確認してください。"
+          />
+        ) : (
+          <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="mb-5 flex items-center justify-between gap-4">
+              <div>
+                <h2 className="text-lg font-semibold text-slate-900">ポジションテーブル</h2>
+                <p className="mt-1 text-sm text-slate-500">accountId から口座一覧へ移動できます。</p>
+              </div>
+              {isFetching ? <div className="text-sm text-slate-500">更新中...</div> : null}
             </div>
-            {isFetching ? <LoadingSpinner /> : null}
-          </div>
-
-          {isLoading ? (
-            <div className="flex min-h-48 items-center justify-center">
-              <LoadingSpinner />
-            </div>
-          ) : positions.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-6 py-12 text-center">
-              <h3 className="text-lg font-semibold text-slate-900">ポジションがありません</h3>
-              <p className="mt-2 text-sm text-slate-500">フィルタ条件を変更するか、API 接続後に再確認してください。</p>
-            </div>
-          ) : (
             <PositionsTable positions={positions} />
-          )}
-        </section>
+          </section>
+        )}
       </main>
     </div>
+  );
+}
+
+function AdminPositionsContent() {
+  const searchParams = useSearchParams();
+  const searchParamsKey = searchParams.toString();
+  const filters = readFilters(searchParams);
+
+  return <AdminPositionsView key={searchParamsKey} filters={filters} />;
+}
+
+export default function AdminPositionsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="p-6">
+          <LoadingState />
+        </div>
+      }
+    >
+      <AdminPositionsContent />
+    </Suspense>
   );
 }
