@@ -6,6 +6,7 @@ import {
   MarketOrderRequest,
   MarketOrderResponse,
   Order,
+  OrderApiItem,
   OrderFilters,
   OrdersResponse,
   Quote,
@@ -14,7 +15,8 @@ import {
   TraderOrderView,
 } from "./types";
 
-type AdminOrdersApiResponse = OrdersResponse | Order[];
+type AdminOrdersApiResponse = OrdersResponse | OrderApiItem[];
+type RawAdminOrder = Record<string, unknown>;
 
 const mockQuotes: Record<string, Quote> = {
   "USD/JPY": {
@@ -109,12 +111,50 @@ const mockTraderOrdersByAccount: Record<string, TraderOrderView[]> = {
 function normalizeOrdersResponse(payload: AdminOrdersApiResponse): OrdersResponse {
   if (Array.isArray(payload)) {
     return {
-      items: payload,
+      items: payload.map(normalizeAdminOrder),
       total: payload.length,
     };
   }
 
-  return payload;
+  return {
+    items: (payload.items ?? []).map(normalizeAdminOrder),
+    total: payload.total ?? payload.items?.length ?? 0,
+  };
+}
+
+function normalizeAdminOrder(order: OrderApiItem | RawAdminOrder): Order {
+  const raw = order as RawAdminOrder;
+
+  return {
+    orderId: asNullableValue(raw.orderId ?? raw.id),
+    accountId: asNullableValue(raw.accountId ?? raw.userId),
+    currencyPair: String(raw.currencyPair ?? "-"),
+    side: String(raw.side ?? "BUY") as Order["side"],
+    orderType: asNullableString(raw.orderType ?? raw.type),
+    quantity: asNumber(raw.quantity),
+    status: String(raw.status ?? "-"),
+    sourceType: asNullableString(raw.sourceType),
+    createdAt: String(raw.createdAt ?? ""),
+  };
+}
+
+function asNullableValue(value: unknown) {
+  return value === null || value === undefined ? null : (value as string | number);
+}
+
+function asNullableString(value: unknown) {
+  return value === null || value === undefined ? null : String(value);
+}
+
+function asNumber(value: unknown) {
+  if (typeof value === "number") {
+    return value;
+  }
+  if (typeof value === "string") {
+    const parsed = Number(value);
+    return Number.isNaN(parsed) ? 0 : parsed;
+  }
+  return 0;
 }
 
 function applyTraderFilters(orders: TraderOrderView[], filters: TraderOrderFilters) {

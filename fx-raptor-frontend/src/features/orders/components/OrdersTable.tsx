@@ -26,7 +26,7 @@ function getStatusTone(status: string) {
   }
 }
 
-function getSourceTone(sourceType: string) {
+function getSourceTone(sourceType: string | null) {
   switch (sourceType) {
     case "USER":
       return "active";
@@ -39,6 +39,10 @@ function getSourceTone(sourceType: string) {
   }
 }
 
+function renderNullableValue(value: string | number | null | undefined) {
+  return value === null || value === undefined || value === "" ? "-" : value;
+}
+
 export function OrdersTable({ orders }: OrdersTableProps) {
   return (
     <DataTable
@@ -46,26 +50,38 @@ export function OrdersTable({ orders }: OrdersTableProps) {
         {
           key: "orderId",
           header: "注文ID",
-          render: (order) => (
-            <Link
-              href={`/admin/orders?orderId=${encodeURIComponent(String(order.orderId))}`}
-              className="font-medium text-cyan-700 hover:underline"
-            >
-              {order.orderId}
-            </Link>
-          ),
+          render: (order) => {
+            if (order.orderId === null || order.orderId === undefined) {
+              return "-";
+            }
+
+            return (
+              <Link
+                href={`/admin/orders?orderId=${encodeURIComponent(String(order.orderId))}`}
+                className="font-medium text-cyan-700 hover:underline"
+              >
+                {order.orderId}
+              </Link>
+            );
+          },
         },
         {
           key: "accountId",
           header: "口座ID",
-          render: (order) => (
-            <Link
-              href={`/admin/accounts?accountId=${encodeURIComponent(String(order.accountId))}`}
-              className="font-medium text-cyan-700 hover:underline"
-            >
-              {order.accountId}
-            </Link>
-          ),
+          render: (order) => {
+            if (order.accountId === null || order.accountId === undefined) {
+              return "-";
+            }
+
+            return (
+              <Link
+                href={`/admin/accounts?accountId=${encodeURIComponent(String(order.accountId))}`}
+                className="font-medium text-cyan-700 hover:underline"
+              >
+                {order.accountId}
+              </Link>
+            );
+          },
         },
         { key: "currencyPair", header: "通貨ペア" },
         {
@@ -77,7 +93,11 @@ export function OrdersTable({ orders }: OrdersTableProps) {
             </span>
           ),
         },
-        { key: "orderType", header: "注文種別" },
+        {
+          key: "orderType",
+          header: "注文種別",
+          render: (order) => renderNullableValue(order.orderType),
+        },
         {
           key: "quantity",
           header: "数量",
@@ -91,12 +111,13 @@ export function OrdersTable({ orders }: OrdersTableProps) {
         {
           key: "sourceType",
           header: "発生元",
-          render: (order) => <StatusBadge label={order.sourceType} tone={getSourceTone(order.sourceType)} />,
+          render: (order) =>
+            order.sourceType ? <StatusBadge label={order.sourceType} tone={getSourceTone(order.sourceType)} /> : "-",
         },
         {
           key: "createdAt",
           header: "作成日時",
-          render: (order) => formatDateTime(order.createdAt),
+          render: (order) => (order.createdAt ? formatDateTime(order.createdAt) : "-"),
         },
       ]}
       rows={orders}

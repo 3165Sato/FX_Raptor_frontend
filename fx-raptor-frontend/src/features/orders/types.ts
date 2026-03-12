@@ -1,15 +1,21 @@
 import { ApiListResponse } from "@/types/common";
 
 export type Order = {
-  orderId: string | number;
-  accountId: string | number;
+  orderId: string | number | null;
+  accountId: string | number | null;
   currencyPair: string;
   side: "BUY" | "SELL";
-  orderType: string;
+  orderType: string | null;
   quantity: number;
   status: string;
-  sourceType: "USER" | "TRIGGER" | "LIQUIDATION" | string;
+  sourceType: "USER" | "TRIGGER" | "LIQUIDATION" | string | null;
   createdAt: string;
+};
+
+export type OrderApiItem = Partial<Order> & {
+  id?: string | number | null;
+  userId?: string | number | null;
+  type?: string | null;
 };
 
 export type OrdersResponse = ApiListResponse<Order>;
