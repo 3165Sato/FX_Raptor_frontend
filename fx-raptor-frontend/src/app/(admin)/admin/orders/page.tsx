@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import { EmptyState } from "@/components/common/EmptyState";
@@ -46,17 +46,15 @@ function getErrorDescription(error: Error) {
   return error.message || "注文一覧の取得に失敗しました。";
 }
 
-function AdminOrdersContent() {
+type AdminOrdersViewProps = {
+  filters: OrderFilterValues;
+};
+
+function AdminOrdersView({ filters }: AdminOrdersViewProps) {
   const pathname = usePathname();
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const filters = readFilters(searchParams);
   const [draftFilters, setDraftFilters] = useState<OrderFilterValues>(filters);
   const { data, isFetching, isLoading, isError, error } = useAdminOrdersQuery(filters);
-
-  useEffect(() => {
-    setDraftFilters(filters);
-  }, [filters]);
 
   const orders = data?.items ?? [];
   const filledCount = orders.filter((order) => order.status === "FILLED").length;
@@ -120,6 +118,14 @@ function AdminOrdersContent() {
       </main>
     </div>
   );
+}
+
+function AdminOrdersContent() {
+  const searchParams = useSearchParams();
+  const searchParamsKey = searchParams.toString();
+  const filters = readFilters(searchParams);
+
+  return <AdminOrdersView key={searchParamsKey} filters={filters} />;
 }
 
 export default function AdminOrdersPage() {

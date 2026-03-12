@@ -20,6 +20,9 @@ type SessionStore = {
 export const useSessionStore = create<SessionStore>((set) => ({
   selectedAccountId: mockAccountOptions[0].accountId,
   role: "admin",
-  setSelectedAccountId: (selectedAccountId) => set({ selectedAccountId }),
-  setRole: (role) => set({ role }),
+  setSelectedAccountId: (selectedAccountId) =>
+    set((state) =>
+      state.selectedAccountId === selectedAccountId ? state : { selectedAccountId },
+    ),
+  setRole: (role) => set((state) => (state.role === role ? state : { role })),
 }));

@@ -13,7 +13,8 @@ type UiStore = {
 export const useUiStore = create<UiStore>((set) => ({
   sidebarOpen: true,
   activePair: "USD/JPY",
-  setSidebarOpen: (sidebarOpen) => set({ sidebarOpen }),
+  setSidebarOpen: (sidebarOpen) =>
+    set((state) => (state.sidebarOpen === sidebarOpen ? state : { sidebarOpen })),
   toggleSidebar: () => set((state) => ({ sidebarOpen: !state.sidebarOpen })),
-  setActivePair: (activePair) => set({ activePair }),
+  setActivePair: (activePair) => set((state) => (state.activePair === activePair ? state : { activePair })),
 }));
